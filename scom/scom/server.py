@@ -258,14 +258,22 @@ MAPPING = {
 
 
 def send_msg(soc, msg: bytes) -> None:
+    """
+    Helper function for sending message to a socket object.
+
+    First sends the message length so that the socket object knows how big
+    the message it so that it can adjust the buffer size for receiving the response.
+    """
     msg_len = str(len(msg)).ljust(HEADER_SIZE).encode()
     soc.send(msg_len)
     soc.send(msg)
 
 
 if __name__ == "__main__":
+    # Generate a key to encrypt transmission during the session.
     session_key = get_random_bytes(16)
 
+    # Generate private and public key for the server
     priv_key, pub_key = utils.gen_rsa_keys()
 
     host_addr = socket.gethostbyname(socket.gethostname())
@@ -293,9 +301,11 @@ if __name__ == "__main__":
             if iv_len:
                 iv = client_soc.recv(int(iv_len))
 
+                # Receive the encrypted message from the client.
                 cipher_msg_len = client_soc.recv(HEADER_SIZE).decode()
                 cipher_msg = client_soc.recv(int(cipher_msg_len))
 
+                # Decode the encrypted message received from the client.
                 msg = utils.aes_decrypt(cipher_msg, session_key, iv).decode()
 
                 if msg == DISCONNECT_MSG:
