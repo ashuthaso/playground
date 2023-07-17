@@ -32,7 +32,7 @@ func TestQuickFindUF(t *testing.T) {
 }
 
 func TestQuickUnionUF(t *testing.T) {
-	var uf QuickFindUF
+	var uf QuickUnionUF
 	uf.new(10)
 
 	uf.union(4, 3)

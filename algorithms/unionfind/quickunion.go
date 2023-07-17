@@ -1,13 +1,16 @@
 package unionfind
 
 type QuickUnionUF struct {
-	ids []int
+	ids   []int
+	sizes []int
 }
 
 func (uf *QuickUnionUF) new(size int) {
 	uf.ids = make([]int, size)
+	uf.sizes = make([]int, size)
 	for i := 0; i < size; i++ {
 		uf.ids[i] = i
+		uf.sizes[i] = 1
 	}
 }
 
@@ -25,5 +28,14 @@ func (uf *QuickUnionUF) connected(p, q int) bool {
 func (uf *QuickUnionUF) union(p, q int) {
 	pRoot := uf.root(p)
 	qRoot := uf.root(q)
-	uf.ids[pRoot] = qRoot
+	if pRoot == qRoot {
+		return
+	}
+	if uf.sizes[pRoot] < uf.sizes[qRoot] {
+		uf.ids[pRoot] = qRoot
+		uf.sizes[qRoot] += uf.sizes[pRoot]
+	} else {
+		uf.ids[qRoot] = pRoot
+		uf.sizes[pRoot] += uf.sizes[qRoot]
+	}
 }
